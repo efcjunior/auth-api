@@ -140,8 +140,8 @@ The estimate assumes one developer and covers ten working days.
 
 Implementation progress:
 
-- [ ] Contract and bootstrap
-- [ ] Authentication extraction
+- [x] Contract and bootstrap
+- [x] Authentication extraction
 - [ ] User management extraction
 - [ ] JWKS and token validation
 - [ ] BDI API cleanup

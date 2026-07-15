@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
@@ -28,6 +30,7 @@ class SecurityConfiguration {
             .cors { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { authorization ->
+                authorization.requestMatchers("/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
                 authorization.requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 val documentation = arrayOf("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 if (properties.openApi.public) {
@@ -59,9 +62,21 @@ class SecurityConfiguration {
                     )
                 }
             }
+            .oauth2ResourceServer { resourceServer ->
+                resourceServer.jwt { jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()) }
+            }
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
             .logout { it.disable() }
         return http.build()
+    }
+
+    private fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
+        val authoritiesConverter = JwtGrantedAuthoritiesConverter()
+        authoritiesConverter.setAuthoritiesClaimName("roles")
+        authoritiesConverter.setAuthorityPrefix("ROLE_")
+        return JwtAuthenticationConverter().apply {
+            setJwtGrantedAuthoritiesConverter(authoritiesConverter)
+        }
     }
 }

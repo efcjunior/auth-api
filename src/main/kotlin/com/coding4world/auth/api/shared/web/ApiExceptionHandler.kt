@@ -1,5 +1,7 @@
 package com.coding4world.auth.api.shared.web
 
+import com.coding4world.auth.api.auth.application.InvalidAudienceException
+import com.coding4world.auth.api.auth.application.InvalidAuthenticationException
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
@@ -20,6 +22,24 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 class ApiExceptionHandler(
     private val problems: ApiProblemFactory,
 ) {
+    @ExceptionHandler(InvalidAuthenticationException::class)
+    fun invalidAuthentication(): ResponseEntity<ProblemDetail> =
+        response(
+            HttpStatus.UNAUTHORIZED,
+            "Authentication failed",
+            "The supplied authentication credentials are invalid",
+            "INVALID_AUTHENTICATION",
+        )
+
+    @ExceptionHandler(InvalidAudienceException::class)
+    fun invalidAudience(): ResponseEntity<ProblemDetail> =
+        response(
+            HttpStatus.BAD_REQUEST,
+            "Invalid audience",
+            "The requested audience is missing or not allowed",
+            "INVALID_AUDIENCE",
+        )
+
     @ExceptionHandler(IllegalArgumentException::class)
     fun invalidRequest(exception: IllegalArgumentException): ResponseEntity<ProblemDetail> =
         response(HttpStatus.BAD_REQUEST, "Invalid request", exception.message ?: "The request is invalid", "INVALID_REQUEST")

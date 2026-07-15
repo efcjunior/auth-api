@@ -30,7 +30,7 @@ If a secret is exposed, revoke it immediately, create a replacement, and update 
 ## Production requirements
 
 - Run without the `local` or `test` profile.
-- Configure signing keys from a secret store when JWT issuing is implemented.
+- Configure JWT signing keys from a secret store.
 - Remove bootstrap administrator credentials after the first administrator account exists.
 - Keep Actuator health details sanitized.
 - Enable forwarded IP header trust only behind a controlled reverse proxy.

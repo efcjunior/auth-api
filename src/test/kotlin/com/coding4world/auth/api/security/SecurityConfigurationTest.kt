@@ -45,6 +45,18 @@ class SecurityConfigurationTest(
     }
 
     @Test
+    fun `login and refresh endpoints are public`() {
+        mockMvc.get("/api/v1/auth/login")
+            .andExpect {
+                status { isMethodNotAllowed() }
+            }
+        mockMvc.get("/api/v1/auth/refresh")
+            .andExpect {
+                status { isMethodNotAllowed() }
+            }
+    }
+
+    @Test
     fun `api endpoints require authentication by default`() {
         mockMvc.get("/api/v1/bootstrap-probe")
             .andExpect {
