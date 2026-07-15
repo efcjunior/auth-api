@@ -145,7 +145,7 @@ Implementation progress:
 - [x] Explicit audience support
 - [x] User management extraction
 - [x] JWKS and token validation
-- [ ] BDI API cleanup
+- [x] BDI API cleanup
 - [ ] User migration
 - [ ] Integration testing
 - [ ] Delivery tooling
