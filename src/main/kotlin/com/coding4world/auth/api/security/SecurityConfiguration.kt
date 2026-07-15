@@ -30,7 +30,7 @@ class SecurityConfiguration {
             .cors { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { authorization ->
-                authorization.requestMatchers("/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
+                authorization.requestMatchers("/api/v1/auth/login", "/api/v1/auth/refresh", "/api/v1/auth/jwks").permitAll()
                 authorization.requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 val documentation = arrayOf("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 if (properties.openApi.public) {

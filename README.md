@@ -6,7 +6,7 @@ This project will centralize users, refresh tokens, JWT issuing, and public key 
 
 ## Current phase
 
-Phase 3 implements authentication plus administrator-managed users:
+Phase 5 implements authentication, administrator-managed users, and public JWKS support:
 
 - login with email, password, and explicit audience;
 - signed RS256 JWT access tokens;
@@ -14,9 +14,10 @@ Phase 3 implements authentication plus administrator-managed users:
 - single-use refresh token rotation;
 - logout by refresh token revocation;
 - bootstrap creation of the first administrator account;
-- administrator endpoints to create, list, get, and update users.
+- administrator endpoints to create, list, get, and update users;
+- public JWKS endpoint for resource-server token validation.
 
-JWKS, rate limiting, BDI API migration, and migration tooling will be implemented in later phases.
+Rate limiting, BDI API migration, and migration tooling will be implemented in later phases.
 
 ## Requirements
 
@@ -97,6 +98,14 @@ Content-Type: application/json
   "refreshToken": "opaque-refresh-token"
 }
 ```
+
+### JWKS
+
+```http
+GET /api/v1/auth/jwks
+```
+
+The JWKS response exposes only public RSA signing key material. Resource servers should use this endpoint to validate JWT signatures issued by `auth-api`.
 
 ## User administration endpoints
 

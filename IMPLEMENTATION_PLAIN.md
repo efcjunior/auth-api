@@ -142,8 +142,9 @@ Implementation progress:
 
 - [x] Contract and bootstrap
 - [x] Authentication extraction
+- [x] Explicit audience support
 - [x] User management extraction
-- [ ] JWKS and token validation
+- [x] JWKS and token validation
 - [ ] BDI API cleanup
 - [ ] User migration
 - [ ] Integration testing
@@ -155,7 +156,7 @@ Implementation progress:
 | 1 | Contract and bootstrap | Create `auth-api` Maven project, package structure, profiles, configuration properties, Docker Compose, README skeleton, and CI workflow | `auth-api` starts locally with test profile |
 | 2 | Authentication extraction | Move/adapt login, refresh, logout, JWT issuing, refresh token model, refresh token repository, and token rotation rules | Authentication service tests pass in `auth-api` |
 | 3 | User management extraction | Move/adapt user model, user repository, administrator bootstrap, create/update endpoints, and add list/get endpoints | User management contract tests pass |
-| 4 | Explicit audience support | Add required `audience` to login/refresh requests, allowed audience configuration, and validation errors | Tokens are issued only for configured audiences |
+| 4 | Explicit audience support | Add required `audience` to login/refresh requests, allowed audience configuration, and validation errors | Completed early in authentication extraction |
 | 5 | JWKS/public key support | Expose public signing keys from `auth-api`; keep private key restricted to `auth-api` | Resource-server test can validate token using JWKS |
 | 6 | BDI API resource-server migration | Remove auth/user endpoints from `bdi-api`; remove user/refresh persistence; configure external issuer/audience/JWKS validation | `bdi-api` accepts valid `auth-api` token and rejects wrong audience |
 | 7 | Rate limiting split | Move login/refresh rate limits to `auth-api`; keep BDI/admin limits in `bdi-api` | Rate-limit tests pass in both projects |

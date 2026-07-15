@@ -62,6 +62,16 @@ class SecurityConfigurationTest(
     }
 
     @Test
+    fun `jwks endpoint is public`() {
+        mockMvc.get("/api/v1/auth/jwks")
+            .andExpect {
+                status { isOk() }
+                jsonPath("$.keys[0].kid") { value("auth-api-rs256") }
+                jsonPath("$.keys[0].d") { doesNotExist() }
+            }
+    }
+
+    @Test
     fun `api endpoints require authentication by default`() {
         mockMvc.get("/api/v1/bootstrap-probe")
             .andExpect {

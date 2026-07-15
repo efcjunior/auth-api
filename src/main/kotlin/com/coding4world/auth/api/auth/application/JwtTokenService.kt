@@ -1,5 +1,6 @@
 package com.coding4world.auth.api.auth.application
 
+import com.coding4world.auth.api.security.JWT_SIGNING_KEY_ID
 import com.coding4world.auth.api.shared.config.AuthApiProperties
 import com.coding4world.auth.api.user.domain.model.User
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm
@@ -35,7 +36,7 @@ class JwtTokenService(
                 .expiresAt(expiresAt)
                 .claim("roles", user.roles.map { it.name }.sorted())
                 .build()
-        val header = JwsHeader.with(SignatureAlgorithm.RS256).build()
+        val header = JwsHeader.with(SignatureAlgorithm.RS256).keyId(JWT_SIGNING_KEY_ID).build()
         val token = jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).tokenValue
         return IssuedAccessToken(token, expiresAt)
     }

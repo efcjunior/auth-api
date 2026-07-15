@@ -26,7 +26,12 @@ import java.time.Clock
 class JwtConfiguration {
     @Bean
     fun jwtEncoder(keys: RsaKeyMaterial): JwtEncoder {
-        val rsaKey = RSAKey.Builder(keys.publicKey).privateKey(keys.privateKey).build()
+        val rsaKey =
+            RSAKey
+                .Builder(keys.publicKey)
+                .privateKey(keys.privateKey)
+                .keyID(JWT_SIGNING_KEY_ID)
+                .build()
         return NimbusJwtEncoder(ImmutableJWKSet<SecurityContext>(JWKSet(rsaKey)))
     }
 
