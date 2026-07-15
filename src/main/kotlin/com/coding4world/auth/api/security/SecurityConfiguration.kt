@@ -39,6 +39,7 @@ class SecurityConfiguration {
                     authorization.requestMatchers(*documentation).authenticated()
                 }
                 authorization
+                    .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                     .requestMatchers("/api/v1/**").authenticated()
                     .anyRequest().denyAll()
             }

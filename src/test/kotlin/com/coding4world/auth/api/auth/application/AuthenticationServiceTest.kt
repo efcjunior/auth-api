@@ -3,6 +3,7 @@ package com.coding4world.auth.api.auth.application
 import com.coding4world.auth.api.auth.domain.model.RefreshToken
 import com.coding4world.auth.api.auth.domain.port.RefreshTokenRepository
 import com.coding4world.auth.api.security.JwtConfiguration
+import com.coding4world.auth.api.shared.domain.PageResult
 import com.coding4world.auth.api.security.RsaKeyMaterial
 import com.coding4world.auth.api.shared.config.AuthApiProperties
 import com.coding4world.auth.api.user.domain.model.User
@@ -222,6 +223,22 @@ private class InMemoryUserRepository : UserRepository {
         val saved = user.copy(id = user.id ?: "user-${users.size + 1}")
         users[requireNotNull(saved.id)] = saved
         return saved
+    }
+
+    override fun findAll(
+        page: Int,
+        size: Int,
+    ): PageResult<User> {
+        val ordered = users.values.sortedBy { it.normalizedEmail }
+        val fromIndex = page * size
+        val content = if (fromIndex >= ordered.size) emptyList() else ordered.drop(fromIndex).take(size)
+        return PageResult(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = ordered.size.toLong(),
+            totalPages = if (ordered.isEmpty()) 0 else ((ordered.size - 1) / size) + 1,
+        )
     }
 
     override fun findByNormalizedEmail(normalizedEmail: String): User? =

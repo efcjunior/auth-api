@@ -6,16 +6,17 @@ This project will centralize users, refresh tokens, JWT issuing, and public key 
 
 ## Current phase
 
-Phase 2 implements authentication extraction:
+Phase 3 implements authentication plus administrator-managed users:
 
 - login with email, password, and explicit audience;
 - signed RS256 JWT access tokens;
 - opaque refresh tokens stored only as SHA-256 hashes;
 - single-use refresh token rotation;
 - logout by refresh token revocation;
-- minimal user persistence required for authentication.
+- bootstrap creation of the first administrator account;
+- administrator endpoints to create, list, get, and update users.
 
-User administration endpoints, bootstrap administrator creation, JWKS, rate limiting, and BDI API migration will be implemented in later phases.
+JWKS, rate limiting, BDI API migration, and migration tooling will be implemented in later phases.
 
 ## Requirements
 
@@ -46,6 +47,17 @@ The API will be available at:
 
 - `http://localhost:8080/actuator/health`
 - `http://localhost:8080/swagger-ui.html`
+
+## Bootstrap administrator
+
+The first administrator can be created at startup by setting both bootstrap variables:
+
+```bash
+BOOTSTRAP_ADMIN_EMAIL=admin@example.com
+BOOTSTRAP_ADMIN_PASSWORD=strong-password
+```
+
+The bootstrap password must contain at least 12 characters. The bootstrap process only creates an administrator when no existing user has the `ADMIN` role.
 
 ## Authentication endpoints
 
@@ -85,6 +97,46 @@ Content-Type: application/json
   "refreshToken": "opaque-refresh-token"
 }
 ```
+
+## User administration endpoints
+
+All user administration endpoints require an authenticated access token with the `ADMIN` role.
+
+```http
+POST /api/v1/admin/users
+Authorization: Bearer admin-access-token
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "strong-password",
+  "roles": ["USER"],
+  "enabled": true
+}
+```
+
+```http
+GET /api/v1/admin/users?page=0&size=20
+Authorization: Bearer admin-access-token
+```
+
+```http
+GET /api/v1/admin/users/{userId}
+Authorization: Bearer admin-access-token
+```
+
+```http
+PATCH /api/v1/admin/users/{userId}
+Authorization: Bearer admin-access-token
+Content-Type: application/json
+
+{
+  "roles": ["USER", "ADMIN"],
+  "enabled": true
+}
+```
+
+User responses never expose password hashes.
 
 ## Configuration
 

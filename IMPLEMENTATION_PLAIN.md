@@ -142,7 +142,7 @@ Implementation progress:
 
 - [x] Contract and bootstrap
 - [x] Authentication extraction
-- [ ] User management extraction
+- [x] User management extraction
 - [ ] JWKS and token validation
 - [ ] BDI API cleanup
 - [ ] User migration

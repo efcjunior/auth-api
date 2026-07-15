@@ -2,6 +2,8 @@ package com.coding4world.auth.api.shared.web
 
 import com.coding4world.auth.api.auth.application.InvalidAudienceException
 import com.coding4world.auth.api.auth.application.InvalidAuthenticationException
+import com.coding4world.auth.api.user.application.UserAlreadyExistsException
+import com.coding4world.auth.api.user.application.UserNotFoundException
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
@@ -38,6 +40,24 @@ class ApiExceptionHandler(
             "Invalid audience",
             "The requested audience is missing or not allowed",
             "INVALID_AUDIENCE",
+        )
+
+    @ExceptionHandler(UserAlreadyExistsException::class)
+    fun userAlreadyExists(): ResponseEntity<ProblemDetail> =
+        response(
+            HttpStatus.CONFLICT,
+            "User already exists",
+            "A user with this email already exists",
+            "USER_ALREADY_EXISTS",
+        )
+
+    @ExceptionHandler(UserNotFoundException::class)
+    fun userNotFound(exception: UserNotFoundException): ResponseEntity<ProblemDetail> =
+        response(
+            HttpStatus.NOT_FOUND,
+            "User not found",
+            exception.message ?: "The requested user was not found",
+            "USER_NOT_FOUND",
         )
 
     @ExceptionHandler(IllegalArgumentException::class)

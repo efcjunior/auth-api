@@ -4,10 +4,15 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
@@ -64,5 +69,23 @@ class SecurityConfigurationTest(
                 content { contentTypeCompatibleWith("application/problem+json") }
                 jsonPath("$.code") { value("AUTHENTICATION_REQUIRED") }
             }
+    }
+
+    @Test
+    fun `admin endpoints require administrator role`() {
+        mockMvc.get("/api/v1/admin/users")
+            .andExpect {
+                status { isUnauthorized() }
+                content { contentTypeCompatibleWith("application/problem+json") }
+                jsonPath("$.code") { value("AUTHENTICATION_REQUIRED") }
+            }
+
+        mockMvc.perform(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .get("/api/v1/admin/users")
+                .with(jwt().authorities(SimpleGrantedAuthority("ROLE_USER"))),
+        ).andExpect(status().isForbidden)
+            .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+            .andExpect(jsonPath("$.code").value("ACCESS_DENIED"))
     }
 }
