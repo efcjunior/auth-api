@@ -21,7 +21,7 @@ auth-api:
     public: false
   rate-limit:
     enabled: true
-    trust-forwarded-headers: false
+    trust-forwarded-headers: ${AUTH_API_RATE_LIMIT_TRUST_FORWARDED_HEADERS:false}
     login:
       capacity: 5
       refill-period: PT1M

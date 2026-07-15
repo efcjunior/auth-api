@@ -1,6 +1,7 @@
 package com.coding4world.auth.api.security
 
 import com.coding4world.auth.api.shared.config.AuthApiProperties
+import com.coding4world.auth.api.shared.ratelimit.RateLimitingFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
@@ -24,6 +26,7 @@ class SecurityConfiguration {
         http: HttpSecurity,
         properties: AuthApiProperties,
         securityProblems: SecurityProblemWriter,
+        rateLimitingFilter: RateLimitingFilter,
     ): SecurityFilterChain {
         http
             .csrf { it.disable() }
@@ -66,6 +69,7 @@ class SecurityConfiguration {
             .oauth2ResourceServer { resourceServer ->
                 resourceServer.jwt { jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()) }
             }
+            .addFilterAfter(rateLimitingFilter, BearerTokenAuthenticationFilter::class.java)
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
             .logout { it.disable() }

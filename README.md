@@ -6,18 +6,15 @@ This project will centralize users, refresh tokens, JWT issuing, and public key 
 
 ## Current phase
 
-Phase 5 implements authentication, administrator-managed users, and public JWKS support:
+Phase 7 is complete. `auth-api` now owns authentication/user rate limits while `bdi-api` owns only BDI-specific rate limits:
 
-- login with email, password, and explicit audience;
-- signed RS256 JWT access tokens;
-- opaque refresh tokens stored only as SHA-256 hashes;
-- single-use refresh token rotation;
-- logout by refresh token revocation;
-- bootstrap creation of the first administrator account;
-- administrator endpoints to create, list, get, and update users;
-- public JWKS endpoint for resource-server token validation.
+- login requests are limited per client IP;
+- refresh requests are limited per client IP;
+- user administration requests are limited per authenticated administrator;
+- public JWKS, health, and info endpoints are not rate-limited by these policies;
+- BDI current, history, and BDI refresh-job limits remain in `bdi-api`.
 
-Rate limiting, BDI API migration, and migration tooling will be implemented in later phases.
+Migration tooling will be implemented in a later phase.
 
 ## Requirements
 
@@ -147,6 +144,18 @@ Content-Type: application/json
 
 User responses never expose password hashes.
 
+## Rate limiting
+
+| Operation | Default limit | Bucket identity |
+| --- | --- | --- |
+| Login | 5 requests/minute | Client IP |
+| Refresh | 10 requests/minute | Client IP |
+| User administration | 5 requests/hour | Authenticated administrator |
+
+Rate-limited responses return `429 Too Many Requests`, `Retry-After`, `RateLimit-*`, `X-RateLimit-*`, and Problem Details with code `RATE_LIMIT_EXCEEDED`.
+
+`AUTH_API_RATE_LIMIT_TRUST_FORWARDED_HEADERS=true` makes public login/refresh buckets use forwarded IP headers. Enable it only when `auth-api` is behind a trusted reverse proxy that sanitizes those headers.
+
 ## Configuration
 
 Important environment variables:
@@ -160,5 +169,6 @@ Important environment variables:
 | `JWT_PRIVATE_KEY` | RSA private key for production JWT signing |
 | `BOOTSTRAP_ADMIN_EMAIL` | Initial administrator email placeholder |
 | `BOOTSTRAP_ADMIN_PASSWORD` | Initial administrator password placeholder |
+| `AUTH_API_RATE_LIMIT_TRUST_FORWARDED_HEADERS` | Use forwarded IP headers for public auth rate-limit buckets; enable only behind a trusted proxy |
 
 `auth-api` must not define `bdi-api` as a hardcoded default audience. Consumers must request an explicit configured audience.

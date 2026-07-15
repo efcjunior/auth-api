@@ -146,6 +146,7 @@ Implementation progress:
 - [x] User management extraction
 - [x] JWKS and token validation
 - [x] BDI API cleanup
+- [x] Rate limiting split
 - [ ] User migration
 - [ ] Integration testing
 - [ ] Delivery tooling
