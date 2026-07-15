@@ -6,15 +6,12 @@ This project will centralize users, refresh tokens, JWT issuing, and public key 
 
 ## Current phase
 
-Phase 7 is complete. `auth-api` now owns authentication/user rate limits while `bdi-api` owns only BDI-specific rate limits:
+Phase 8 is complete. `auth-api` now includes migration tooling for legacy `bdi-api` users:
 
-- login requests are limited per client IP;
-- refresh requests are limited per client IP;
-- user administration requests are limited per authenticated administrator;
-- public JWKS, health, and info endpoints are not rate-limited by these policies;
-- BDI current, history, and BDI refresh-job limits remain in `bdi-api`.
-
-Migration tooling will be implemented in a later phase.
+- user documents can be copied from `bdi-api.users` to `auth-api.users`;
+- password hashes are preserved so migrated users keep their existing password;
+- refresh tokens are intentionally not migrated;
+- dry-run mode is enabled by default and safely reports when there are no users to migrate.
 
 ## Requirements
 
@@ -56,6 +53,20 @@ BOOTSTRAP_ADMIN_PASSWORD=strong-password
 ```
 
 The bootstrap password must contain at least 12 characters. The bootstrap process only creates an administrator when no existing user has the `ADMIN` role.
+
+## User migration
+
+If an older `bdi-api` database already contains users, copy them into `auth-api` before switching traffic:
+
+```bash
+BDI_MONGODB_URI=mongodb://localhost:27017/bdi-api \
+AUTH_MONGODB_URI=mongodb://localhost:27017/auth-api \
+mongosh --quiet scripts/migrate-bdi-users.js
+```
+
+The migration script is a dry run by default. To write users into `auth-api`, review the dry-run output first and then set `MIGRATE_USERS_DRY_RUN=false`.
+
+Because this project has not been run yet, the expected result is usually an empty source collection and no migration work. See [docs/user-migration.md](docs/user-migration.md) for the full procedure.
 
 ## Authentication endpoints
 

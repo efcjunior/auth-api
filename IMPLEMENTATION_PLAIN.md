@@ -104,7 +104,7 @@ bdi-api:
 
 `bdi-api` will keep only BDI-related collections.
 
-Existing users will be copied from `bdi-api.users` to `auth-api.users`. Existing refresh tokens will not be migrated, so users must log in again.
+Existing users can be copied from `bdi-api.users` to `auth-api.users` with `scripts/migrate-bdi-users.js`. Existing refresh tokens are not migrated, so users must log in again. If the source collection is empty because the project has never run, the migration is a no-op.
 
 ## Authentication and authorization
 
@@ -147,7 +147,7 @@ Implementation progress:
 - [x] JWKS and token validation
 - [x] BDI API cleanup
 - [x] Rate limiting split
-- [ ] User migration
+- [x] User migration
 - [ ] Integration testing
 - [ ] Delivery tooling
 - [ ] Hardening and release
@@ -161,7 +161,7 @@ Implementation progress:
 | 5 | JWKS/public key support | Expose public signing keys from `auth-api`; keep private key restricted to `auth-api` | Resource-server test can validate token using JWKS |
 | 6 | BDI API resource-server migration | Remove auth/user endpoints from `bdi-api`; remove user/refresh persistence; configure external issuer/audience/JWKS validation | `bdi-api` accepts valid `auth-api` token and rejects wrong audience |
 | 7 | Rate limiting split | Move login/refresh rate limits to `auth-api`; keep BDI/admin limits in `bdi-api` | Rate-limit tests pass in both projects |
-| 8 | User migration tooling | Add documented migration script or command to copy users from `bdi-api` MongoDB to `auth-api` MongoDB | Migrated user can log in through `auth-api` with existing password |
+| 8 | User migration tooling | Add documented migration script to copy users from `bdi-api` MongoDB to `auth-api` MongoDB; dry-run reports empty sources as no-op | Migrated user can log in through `auth-api` with existing password, or empty source is confirmed as no-op |
 | 9 | Integration testing | Add Docker Compose or documented local flow for `auth-api` + `bdi-api` + MongoDB | End-to-end login, refresh, and protected BDI request pass |
 | 10 | Hardening and release | Security review, documentation, changelog, release checklist, secret review, and final verification | `mvn verify` passes in both projects |
 
