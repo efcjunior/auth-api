@@ -1,0 +1,13 @@
+.git/
+.github/
+.mvn/
+src/
+target/*
+!target/*.jar
+.env
+.idea/
+.vscode/
+*.iml
+*.log
+*.md
+IMPLEMENTATION_PLAIN.md

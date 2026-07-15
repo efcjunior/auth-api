@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: auth-api
+  data:
+    mongodb:
+      auto-index-creation: false
+
+auth-api:
+  security:
+    refresh-token-ttl: P7D
+    jwt:
+      issuer: ${JWT_ISSUER:https://auth.coding4world.com}
+      allowed-audiences: ${JWT_ALLOWED_AUDIENCES:}
+      access-token-ttl: PT15M
+      public-key: ${JWT_PUBLIC_KEY:}
+      private-key: ${JWT_PRIVATE_KEY:}
+    bootstrap-admin:
+      email: ${BOOTSTRAP_ADMIN_EMAIL:}
+      password: ${BOOTSTRAP_ADMIN_PASSWORD:}
+  open-api:
+    public: false
+  rate-limit:
+    enabled: true
+    trust-forwarded-headers: false
+    login:
+      capacity: 5
+      refill-period: PT1M
+    refresh:
+      capacity: 10
+      refill-period: PT1M
+    administration:
+      capacity: 5
+      refill-period: PT1H
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never

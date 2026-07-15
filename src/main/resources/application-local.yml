@@ -1,0 +1,18 @@
+spring:
+  mongodb:
+    uri: ${MONGODB_URI:mongodb://localhost:27017/auth-api}
+
+auth-api:
+  security:
+    jwt:
+      issuer: ${JWT_ISSUER:http://localhost:8080}
+      allowed-audiences: ${JWT_ALLOWED_AUDIENCES:local-api}
+    bootstrap-admin:
+      email: ${BOOTSTRAP_ADMIN_EMAIL:}
+      password: ${BOOTSTRAP_ADMIN_PASSWORD:}
+  open-api:
+    public: true
+
+logging:
+  level:
+    com.coding4world.auth.api: DEBUG

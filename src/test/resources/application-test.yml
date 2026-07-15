@@ -1,0 +1,27 @@
+spring:
+  mongodb:
+    uri: mongodb://localhost:1/auth-api-test?serverSelectionTimeoutMS=10&connectTimeoutMS=10
+
+auth-api:
+  security:
+    jwt:
+      issuer: https://auth.test.coding4world.com
+      allowed-audiences:
+        - bdi-api
+        - another-api
+      access-token-ttl: PT15M
+    refresh-token-ttl: P7D
+  open-api:
+    public: true
+  rate-limit:
+    enabled: true
+    trust-forwarded-headers: false
+    login:
+      capacity: 5
+      refill-period: PT1M
+    refresh:
+      capacity: 10
+      refill-period: PT1M
+    administration:
+      capacity: 5
+      refill-period: PT1H

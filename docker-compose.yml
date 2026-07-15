@@ -1,0 +1,42 @@
+services:
+  mongo:
+    image: mongo:8.0
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      MONGODB_URI: ${MONGODB_URI:-mongodb://mongo:27017/auth-api}
+      JWT_ISSUER: ${JWT_ISSUER:-http://localhost:8080}
+      JWT_ALLOWED_AUDIENCES: ${JWT_ALLOWED_AUDIENCES:-bdi-api}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
+      AUTH_API_RATE_LIMIT_TRUST_FORWARDED_HEADERS: ${AUTH_API_RATE_LIMIT_TRUST_FORWARDED_HEADERS:-false}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ${LOGGING_STRUCTURED_FORMAT_CONSOLE:-logstash}
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mongo-data:
